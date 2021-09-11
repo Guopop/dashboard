@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { defineAsyncComponent } from '@vue/runtime-core'
 import Home from '@/views/Home/index.vue'
-import Welcome from '@/components/welcome.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {

@@ -52,8 +52,11 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .name(query.getName())
                 .password(query.getPassword())
-                .roles(CollUtil.newHashSet(roles))
+                .state(query.getState())
                 .build();
+        if (CollUtil.isNotEmpty(roles)) {
+            user.setRoles(CollUtil.newHashSet(roles));
+        }
 
         userRepository.save(user);
     }
@@ -75,11 +78,12 @@ public class UserServiceImpl implements UserService {
             }
         });
 
-        List<Role> roles = roleRepository.findAllById(query.getRoleIds());
-
         user.setName(query.getName());
-        user.setPassword(query.getPassword());
-        user.setRoles(CollUtil.newHashSet(roles));
+        user.setState(query.getState());
+        if (CollUtil.isNotEmpty(query.getRoleIds())) {
+            List<Role> roles = roleRepository.findAllById(query.getRoleIds());
+            user.setRoles(CollUtil.newHashSet(roles));
+        }
 
         userRepository.save(user);
     }

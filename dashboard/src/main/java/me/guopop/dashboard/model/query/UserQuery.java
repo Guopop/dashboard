@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -19,8 +20,11 @@ public class UserQuery {
     @NotBlank(message = "用户名称为空")
     private String name;
 
+    @ApiModelProperty("用户状态")
+    @NotNull(message = "用户状态为空")
+    private Boolean state;
+
     @ApiModelProperty("用户密码")
-    @NotBlank(message = "用户密码为空")
     private String password;
 
     @ApiModelProperty("用户分配角色id集合")
