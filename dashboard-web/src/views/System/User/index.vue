@@ -36,7 +36,7 @@
         <el-table-column label="操作">
           <template #default="{ row }">
             <el-button type="primary" icon="el-icon-edit" @click="updateUser(row)"></el-button>
-            <el-button type="danger" icon="el-icon-delete"></el-button>
+            <el-button type="danger" icon="el-icon-delete" @click="deleteUser(row.id)"></el-button>
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting"></el-button>
             </el-tooltip>
@@ -95,7 +95,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="updateDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateUser">确 定</el-button>
+          <el-button type="primary" @click="updateUserDialog">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -103,8 +103,8 @@
 </template>
 
 <script lang="ts">
-import { ElMessage } from 'element-plus'
-import { defineComponent, onMounted, reactive, Ref, ref, toRefs } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { defineComponent, onMounted, reactive, ref } from 'vue'
 import http from '../../../utils/request'
 
 interface UserFindQuery {
@@ -155,6 +155,7 @@ export default defineComponent({
     })
 
     const updateForm = reactive({
+      id: 0,
       name: '',
       password: '',
       state: true,
@@ -238,9 +239,53 @@ export default defineComponent({
     }
 
     const updateUser = (val: any) => {
+      updateForm.id = val.id
       updateForm.name = val.name
       updateForm.state = val.state
       updateDialogVisible.value = true
+    }
+
+    const updateUserDialog = () => {
+      updateFormRef.value?.validate(async (valid: boolean) => {
+        if (!valid) return
+        console.log(updateForm.id)
+        const { data: res } = await http.put('user/' + updateForm.id, updateForm)
+        if (res.code !== 200) {
+          ElMessage.error('更新用户失败')
+        } else {
+          refreshUserList()
+          ElMessage.success('更新用户成功')
+        }
+        updateDialogVisible.value = false
+      })
+    }
+
+    const updateDialogClosed = () => {
+      updateFormRef.value?.resetFields()
+    }
+
+    const deleteUser = (id: number) => {
+      ElMessageBox.confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          deleteUserById(id)
+        })
+        .catch(() => {
+          ElMessage.info('已取消删除')
+        })
+    }
+
+    const deleteUserById = async (id: number) => {
+      const { data: res } = await http.delete('user/' + id)
+      if (res.code !== 200) {
+        ElMessage.error('删除用户失败')
+      } else {
+        refreshUserList()
+        ElMessage.success('删除用户成功')
+      }
     }
 
     return {
@@ -262,7 +307,10 @@ export default defineComponent({
       handleCurrentChange,
       userStateChanged,
       addUser,
-      updateUser
+      updateUser,
+      updateDialogClosed,
+      updateUserDialog,
+      deleteUser
     }
   }
 })
