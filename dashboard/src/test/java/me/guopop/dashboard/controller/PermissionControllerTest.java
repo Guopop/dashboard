@@ -29,9 +29,9 @@ class PermissionControllerTest {
     void addPermission() throws Exception {
         PermissionQuery permissionQuery = new PermissionQuery();
         permissionQuery.setParentId(2L);
-        permissionQuery.setName("杯子管理");
-        permissionQuery.setType(Permission.Type.MENU);
-        permissionQuery.setPermissionOrder(20);
+        permissionQuery.setName("权限管理");
+        permissionQuery.setType(Permission.Type.DIRECTORY);
+        permissionQuery.setPermissionOrder(2);
 
         String request = JSONUtil.toJsonStr(permissionQuery);
 

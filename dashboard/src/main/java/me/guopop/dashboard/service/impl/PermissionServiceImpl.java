@@ -50,6 +50,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         Permission permission = new Permission();
         BeanUtils.copyProperties(query, permission);
+        permission.setParent(parent);
         permissionRepository.save(permission);
     }
 
